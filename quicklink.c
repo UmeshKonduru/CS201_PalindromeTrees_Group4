@@ -6,29 +6,63 @@
 
 #include<stdlib.h>
 #include<stdio.h>
+
 typedef struct AVLNode AVLNode;
 typedef struct BST BST;
 typedef struct Node Node;
 typedef struct EERTREE EERTREE;
+
 int max(int a, int b) {
+
     return a > b ? a : b;
 }
+
 struct AVLNode { 
- char key;
+
+    char key;
     Node *edge;
     int height;
     AVLNode *left, *right;
 };
+
 AVLNode *createAVLNode(char key, Node *edge) {
+
+    AVLNode *new_avlnode = (AVLNode *) malloc(sizeof(AVLNode)); 
+
+    new_avlnode->key = key;
+    new_avlnode->edge = edge;
+    new_avlnode->height = 0;
+    new_avlnode->left = new_avlnode->right = NULL;
+
+    return new_avlnode;
 }
+
 int height(AVLNode *node) {
+
     return node ? node->height : -1;
 }
+
 int balance(AVLNode *node) {
+
     return node ? height(node->left) - height(node->right) : 0;
 }
+
 void leftRotate(AVLNode **node) {
+
+    if(*node == NULL) return;
+
+    AVLNode *new_root = (*node)->right;
+
+    // perform rotation
+    (*node)->right = new_root->left;
+    new_root->left = *node;
+    *node = new_root;
+
+    // update heights
+    (*node)->left->height = max(height((*node)->left->left), height((*node)->left->right)) + 1;
+    (*node)->height = max(height((*node)->left), height((*node)->right)) + 1;
 }
+
 void rightRotate(AVLNode **node) {
 
     if(*node == NULL) return;
@@ -44,7 +78,9 @@ void rightRotate(AVLNode **node) {
     (*node)->right->height = max(height((*node)->right->left), height((*node)->right->right)) + 1;
     (*node)->height = max(height((*node)->left), height((*node)->right)) + 1;
 }
+
 Node *search(AVLNode *root, char key) {
+
     if(root == NULL) return NULL;
 
     if(root->key == key) return root->edge;
@@ -53,39 +89,95 @@ Node *search(AVLNode *root, char key) {
 
     if(key > root->key) return search(root->right, key);
 }
+
 void insert(AVLNode **root, AVLNode *node) {
+
+    if(*root == NULL) {
+        *root = node;
+        return;
+    }
+
+    int bf, lbf, rbf;
+
+    // insert recursively into left or right subtree
+    if(node->key < (*root)->key) {
+        insert(&(*root)->left, node);
+    } else if(node->key > (*root)->key) {
+        insert(&(*root)->right, node);
+    }
+
+    // update height of root
+    (*root)->height = max(height((*root)->left), height((*root)->right)) + 1;
+
+    // balance the tree
+    bf = balance(*root);
+    lbf = balance((*root)->left);
+    rbf = balance((*root)->right);
+
+    if(bf > 1 && lbf >= 0) {
+        rightRotate(root);
+    } else if(bf > 1 && lbf < 0) {
+        leftRotate(&(*root)->left);
+        rightRotate(root);
+    } else if(bf < -1 && rbf <= 0) {
+        leftRotate(root);
+    } else if(bf < -1 && rbf > 0) {
+        rightRotate(&(*root)->right);
+        leftRotate(root);
+    }
 }
+
 struct BST {
 
     AVLNode *root;
 };
+
 BST *createBST() {
+
     BST *new_bst = (BST *) malloc(sizeof(BST));
 
     new_bst->root = NULL;
 
     return new_bst;
 }
+
 Node *searchBST(BST *bst, int key) {
+
+    return search(bst->root, key);
 }
+
 void insertBST(BST *bst, int key, Node *edge) {
 
     insert(&bst->root, createAVLNode(key, edge));
 }
-struct Node { 
-int len; // length of the palindrome represented by this node
+
+struct Node { // single node of an EERTREE, represents a palindrome
+
+    int len; // length of the palindrome represented by this node
     BST *edges; // a (balanced) bst of all the edges from this node, lookup is O(log s)
     Node *link; // pointer to the longest proper suffix palindrome of this palindrome
     Node *quick_link; // pointer to the longest suffix palindrome preceded by a character other than the one preceding link
 };
+
 Node *createNode(int len) {
+
+    Node *new_node = (Node *) malloc(sizeof(Node));
+
+    new_node->len = len;
+    new_node->edges = createBST();
+    new_node->link = NULL;
+    new_node->quick_link = NULL;
+
+    return new_node;
 }
+
 struct EERTREE { 
 
     Node *root_even, *root_odd; // Nodes representing empty string and imaginary string respectively
     Node *max_suf; // Node representing the longest suffix palindrome of the current string
     int size; // Number of non-trivial nodes in the EERTREE, i.e., number of palindromes in the current string
 };
+
 EERTREE *createEERTREE() {
 
     EERTREE *new_eertree = (EERTREE *) malloc(sizeof(EERTREE));
@@ -99,7 +191,9 @@ EERTREE *createEERTREE() {
 
     return new_eertree;
 }
+
 void add(EERTREE *eertree, char *str, int i) {
+
     Node *new_max_suf;
 
     // find the longest suffix palindrome of the current string preceded by str[i]
@@ -159,7 +253,29 @@ void add(EERTREE *eertree, char *str, int i) {
     // update the max_suf of the EERTREE
     eertree->max_suf = new_max_suf;
 }
+
 EERTREE *buildEERTREE(char *str) {
+
+    EERTREE *eertree = createEERTREE();
+
+    for(int i = 0; str[i] != '\0'; i++) add(eertree, str, i);
+
+    return eertree; 
 }
-void main() {   
+
+void main() {
+
+    printf("You can test the EERTREE data structure by entering a string below. Press Q to Quit.\n");
+
+    char str[1000000];
+
+    EERTREE *eertree;
+
+    while(1) {
+        printf("Enter a string: ");
+        scanf("%s", str);
+        if(str[0] == 'Q') break;
+        eertree = buildEERTREE(str);
+        printf("\n");
+    }    
 }
