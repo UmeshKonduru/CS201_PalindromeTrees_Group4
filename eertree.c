@@ -11,7 +11,10 @@ int max(int a, int b) {
 
     return a > b ? a : b;
 }
-struct AVLNode { 
+struct AVLNode { char key;
+    Node *edge;
+    int height;
+    AVLNode *left, *right;
 };
 AVLNode *createAVLNode(char key, Node *edge) {
 }
@@ -20,6 +23,7 @@ int height(AVLNode *node) {
     return node ? node->height : -1;
 }
 int balance(AVLNode *node) {
+    return node ? height(node->left) - height(node->right) : 0;
 }
 void leftRotate(AVLNode **node) {
 }
@@ -39,6 +43,13 @@ void rightRotate(AVLNode **node) {
     (*node)->height = max(height((*node)->left), height((*node)->right)) + 1;
 }
 Node *search(AVLNode *root, char key) {
+    if(root == NULL) return NULL;
+
+    if(root->key == key) return root->edge;
+
+    if(key < root->key) return search(root->left, key);
+
+    if(key > root->key) return search(root->right, key);
 }
 void insert(AVLNode **root, AVLNode *node) {
 }
@@ -49,6 +60,7 @@ struct BST {
 BST *createBST() {
 }
 Node *searchBST(BST *bst, int key) {
+    AVLNode *root;
 }
 void insertBST(BST *bst, int key, Node *edge) {
 
@@ -65,10 +77,34 @@ struct EERTREE {
     int size; // Number of non-trivial nodes in the EERTREE, i.e., number of palindromes in the current string
 };
 EERTREE *createEERTREE() {
+    EERTREE *new_eertree = (EERTREE *) malloc(sizeof(EERTREE));
+
+    new_eertree->root_even = createNode(0);
+    new_eertree->root_odd = createNode(-1);
+    new_eertree->root_even->link = new_eertree->root_odd; // suffix link of root_even is root_odd
+    new_eertree->root_odd->link = new_eertree->root_odd; // suffix link of root_odd is root_odd
+    new_eertree->max_suf = new_eertree->root_even;
+    new_eertree->size = 0;
+
+    return new_eertree;
 }
 void add(EERTREE *eertree, char *str, int i) {
 }
 EERTREE *buildEERTREE(char *str) {
 }
 void main() {  
+    char *str = (char*) malloc(100 * sizeof(char));
+    EERTREE *eertree; 
+
+    while(1) {
+
+        printf("Enter the string: ");
+        scanf("%s", str);
+        printf("\n");
+
+        eertree = buildEERTREE(str);
+
+        free(str);
+        free(eertree);
+        printf("\n");
 }
