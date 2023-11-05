@@ -2,6 +2,8 @@
 // s: Size of Alphabet
 // n: Size of EERTREE
 
+// The following code is an implementation of the data structure EERTREE
+
 #include<stdlib.h>
 #include<stdio.h>
 
@@ -41,7 +43,7 @@ int height(AVLNode *node) {
 }
 
 int balance(AVLNode *node) {
-    
+
     return node ? height(node->left) - height(node->right) : 0;
 }
 
@@ -78,7 +80,7 @@ void rightRotate(AVLNode **node) {
 }
 
 Node *search(AVLNode *root, char key) {
-    
+
     if(root == NULL) return NULL;
 
     if(root->key == key) return root->edge;
@@ -140,8 +142,8 @@ BST *createBST() {
 }
 
 Node *searchBST(BST *bst, int key) {
-    
-    AVLNode *root;
+
+    return search(bst->root, key);
 }
 
 void insertBST(BST *bst, int key, Node *edge) {
@@ -180,8 +182,7 @@ EERTREE *createEERTREE() {
 
     new_eertree->root_even = createNode(0);
     new_eertree->root_odd = createNode(-1);
-    new_eertree->root_even->link = new_eertree->root_odd; // suffix link of root_even is root_odd
-    new_eertree->root_odd->link = new_eertree->root_odd; // suffix link of root_odd is root_odd
+    new_eertree->root_even->link = new_eertree->root_odd->link = new_eertree->root_odd; // suffix link of root_even and root_odd is root_odd
     new_eertree->max_suf = new_eertree->root_even;
     new_eertree->size = 0;
 
