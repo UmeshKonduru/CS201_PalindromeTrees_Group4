@@ -5,7 +5,7 @@
 - Vidushi Goyal (2022CSB1142)
 - Umesh Konduru (2022CSB1139)
 
-**A.How to run**
+**A.How to run**\
 1.eertree.c\
 Input:the terminal will prompt you to enter a string\
 Output:the program will give you all the distinct subpalindromes present in the string
