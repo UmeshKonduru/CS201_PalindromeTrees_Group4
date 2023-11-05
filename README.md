@@ -6,8 +6,8 @@
 - Umesh Konduru (2022CSB1139)
 
 **A.How to run**
-1.eertree.c
-Input:the terminal will prompt you to enter a string
+1.eertree.c\n
+Input:the terminal will prompt you to enter a string\n
 Output:the program will give you all the distinct subpalindromes present in the string
 
 2.jointeertree.c
